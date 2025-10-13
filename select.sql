@@ -1,6 +1,15 @@
 -- total de registros: 72255
 select count(*) from recife_sinistros
 
+SELECT COUNT(*)
+FROM recife_sinistros
+WHERE extract(year from data) = 2022
+-- total ano 2022: 2669
+
+-- 69521 + 2669 (2022 null)= 72190
+-- 72255 - 72190 = 65
+-- 65 = 10 (invalidos) + 55 (null entre 2016 e 2019)
+
 -- total de type invalido: 10
 select id from recife_sinistros
 WHERE hora in('M', 'MARINALVA', '1037712:00:00', '07/mai', '.', '1049592:00:00', '48:00:00', 'judia', 'CITTAMOBI', '29208:00:00')
@@ -86,3 +95,12 @@ ORDER BY nhora
 23	1174
 */
 -- total 69521
+
+-- sinistro por hora todos dias / ANO (2022 missing hora)
+ SELECT 
+  MOD(((EXTRACT(hour FROM hora::time)*60) / 60)::integer, 24) AS nhora, 
+  COUNT(*)
+FROM recife_sinistros
+WHERE extract(year from data) = 2022 and hora not in('M', 'MARINALVA', '1037712:00:00', '07/mai', '.', '1049592:00:00', '48:00:00', 'judia', 'CITTAMOBI', '29208:00:00') --and EXTRACT(DOW FROM data) BETWEEN 1 AND 5
+GROUP BY nhora
+ORDER BY nhora
